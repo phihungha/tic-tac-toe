@@ -41,6 +41,10 @@ ul {
   outline: none;
 }
 
+.square-won {
+  background: #0082fb;
+}
+
 .kbd-navigation .square:focus {
   background: #ddd;
 }

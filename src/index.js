@@ -29,7 +29,7 @@ class Board extends React.Component {
       const squares = [];
       for (let j = 0; j < 3; j++) {
         const squareIndex = 3 * i + j;
-        const won = this.props.winSquareIndexes?.includes(squareIndex);
+        const won = this.props.winSquareIndexes?.includes(squareIndex) ? true : false;
         squares.push(this.renderSquare(squareIndex, won));
       }
 
@@ -123,7 +123,10 @@ class Game extends React.Component {
 
     const currentMove = moveHistory[this.state.currentStep];
     const winSquareIndexes = calcWinSquareIndexes(currentMove.squareValues);
-    const winner = winSquareIndexes ? currentMove.squareValues[winSquareIndexes[0]] : null;
+    let winner = winSquareIndexes ? currentMove.squareValues[winSquareIndexes[0]] : null;
+    if (!winner && !currentMove.squareValues.includes(null)) {
+      winner = "None (A draw!)";
+    }
     const status = winner
       ? "Winner: " + winner
       : "Next player: " + (this.state.xIsNext ? "X" : "O");

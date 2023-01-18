@@ -97,9 +97,14 @@ class Game extends React.Component {
       const desc = move.column
         ? `Go to move #${step} (row: ${move.row}, col: ${move.column})`
         : "Go to game start";
+
+      const isSelected = step === this.state.currentStep;
+
       return (
         <li key={step}>
-          <button onClick={() => this.jumpTo(step)}>{desc}</button>
+          <button className={isSelected ? "is-selected" : null} onClick={() => this.jumpTo(step)}>
+            {desc}
+          </button>
         </li>
       );
     });

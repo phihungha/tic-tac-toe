@@ -10,6 +10,84 @@ function Square(props) {
   );
 }
 
+function Status(props) {
+  const currentMove = props.currentMove;
+  const winSquareIndexes = props.winSquareIndexes;
+
+  let winner = winSquareIndexes ? currentMove.squareValues[winSquareIndexes[0]] : null;
+
+  if (!winner && !currentMove.squareValues.includes(null)) {
+    winner = "None (A draw!)";
+  }
+
+  const status = winner ? "Winner: " + winner : "Next player: " + (props.xIsNext ? "X" : "O");
+
+  return <div>{status}</div>;
+}
+
+function MoveHistoryItem(props) {
+  const move = props.move;
+  const step = props.step;
+
+  const description = move.column
+    ? `Go to move #${step} (row: ${move.row}, col: ${move.column})`
+    : "Go to game start";
+
+  return (
+    <li key={step}>
+      <button
+        className={props.isSelected ? "is-selected" : null}
+        onClick={() => props.onClick(step)}
+      >
+        {description}
+      </button>
+    </li>
+  );
+}
+
+class MoveHistory extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      moveHistoryDescSorted: false,
+    };
+  }
+
+  toggleMoveHistorySortMode() {
+    this.setState({
+      moveHistoryDescSorted: !this.state.moveHistoryDescSorted,
+    });
+  }
+
+  render() {
+    const items = this.props.moveHistory.map((move, step) => {
+      const isSelected = step === this.props.selectedStep;
+      return (
+        <MoveHistoryItem
+          key={step}
+          move={move}
+          step={step}
+          isSelected={isSelected}
+          onClick={this.props.onSelect}
+        />
+      );
+    });
+
+    if (this.state.moveHistoryDescSorted) {
+      items.reverse();
+    }
+
+    return (
+      <div>
+        <button onClick={() => this.toggleMoveHistorySortMode()}>
+          {this.state.moveHistoryDescSorted ? "Descending" : "Ascending"}
+        </button>
+        <ol>{items}</ol>;
+      </div>
+    );
+  }
+}
+
 class Board extends React.Component {
   renderSquare(squareIndex, won) {
     return (
@@ -55,7 +133,6 @@ class Game extends React.Component {
           row: null,
         },
       ],
-      moveHistoryDescSorted: false,
       xIsNext: true,
       currentStep: 0,
     };
@@ -92,44 +169,10 @@ class Game extends React.Component {
     });
   }
 
-  toggleMoveHistorySortMode() {
-    this.setState({
-      moveHistoryDescSorted: !this.state.moveHistoryDescSorted,
-    });
-  }
-
   render() {
     const moveHistory = this.state.moveHistory;
-
-    const moves = moveHistory.map((move, step) => {
-      const desc = move.column
-        ? `Go to move #${step} (row: ${move.row}, col: ${move.column})`
-        : "Go to game start";
-
-      const isSelected = step === this.state.currentStep;
-
-      return (
-        <li key={step}>
-          <button className={isSelected ? "is-selected" : null} onClick={() => this.jumpTo(step)}>
-            {desc}
-          </button>
-        </li>
-      );
-    });
-
-    if (this.state.moveHistoryDescSorted) {
-      moves.reverse();
-    }
-
     const currentMove = moveHistory[this.state.currentStep];
     const winSquareIndexes = calcWinSquareIndexes(currentMove.squareValues);
-    let winner = winSquareIndexes ? currentMove.squareValues[winSquareIndexes[0]] : null;
-    if (!winner && !currentMove.squareValues.includes(null)) {
-      winner = "None (A draw!)";
-    }
-    const status = winner
-      ? "Winner: " + winner
-      : "Next player: " + (this.state.xIsNext ? "X" : "O");
 
     return (
       <div className="game">
@@ -141,11 +184,16 @@ class Game extends React.Component {
           />
         </div>
         <div className="game-info">
-          <div>{status}</div>
-          <button onClick={() => this.toggleMoveHistorySortMode()}>
-            {this.state.moveHistoryDescSorted ? "Descending" : "Ascending"}
-          </button>
-          <ol>{moves}</ol>
+          <Status
+            currentMove={currentMove}
+            winSquareIndexes={winSquareIndexes}
+            xIsNext={this.state.xIsNext}
+          />
+          <MoveHistory
+            moveHistory={moveHistory}
+            selectedStep={this.state.currentStep}
+            onSelect={(step) => this.jumpTo(step)}
+          />
         </div>
       </div>
     );

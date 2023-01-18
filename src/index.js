@@ -27,9 +27,13 @@ class Board extends React.Component {
     for (let i = 0; i < 3; i++) {
       const squares = [];
       for (let j = 0; j < 3; j++) {
-        squares.push(this.renderSquare(3*i + j));
+        squares.push(this.renderSquare(3 * i + j));
       }
-      rows.push(<div className="board-row" key={i}>{squares}</div>);
+      rows.push(
+        <div className="board-row" key={i}>
+          {squares}
+        </div>
+      );
     }
 
     return <div>{rows}</div>;
@@ -53,7 +57,10 @@ class Game extends React.Component {
   }
 
   handleClick(squareIndex) {
-    const moveHistory = this.state.moveHistory.slice(0, this.state.currentStep + 1);
+    const moveHistory = this.state.moveHistory.slice(
+      0,
+      this.state.currentStep + 1
+    );
     const currentMove = moveHistory[moveHistory.length - 1];
     const squareValues = currentMove.squareValues.slice();
 
@@ -95,7 +102,10 @@ class Game extends React.Component {
 
       return (
         <li key={step}>
-          <button className={isSelected ? "is-selected" : null} onClick={() => this.jumpTo(step)}>
+          <button
+            className={isSelected ? "is-selected" : null}
+            onClick={() => this.jumpTo(step)}
+          >
             {desc}
           </button>
         </li>

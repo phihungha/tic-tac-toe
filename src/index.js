@@ -4,7 +4,10 @@ import "./index.css";
 
 function Square(props) {
   return (
-    <button className={`square ${props.won ? "square-won" : null}`} onClick={props.onClick}>
+    <button
+      className={`square ${props.won ? "square-won" : null}`}
+      onClick={() => props.onClick(props.value)}
+    >
       {props.value}
     </button>
   );
@@ -95,7 +98,7 @@ class Board extends React.Component {
         key={squareIndex}
         won={won}
         value={this.props.squareValues[squareIndex]}
-        onClick={() => this.props.onClick(squareIndex)}
+        onClick={this.props.onClick}
       />
     );
   }
